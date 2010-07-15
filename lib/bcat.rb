@@ -85,12 +85,24 @@ class Bcat
       "<!-- bcat was here -->",
       "<title>#{self[:title] || 'bcat'}</title>",
       inject.to_s,
+      js_head,
       "</head>"
     ].join("\n")
   end
 
   def foot
     "</body></html>"
+  end
+  
+  def js_head
+    if @config[:js]
+      %{<script type="text/javascript">
+          #{contents_of_public_file('jquery-1.4.2.min.js')}
+        </script>
+        <script type="text/javascript">
+          #{contents_of_public_file('bcat.js')}
+        </script>}
+    end
   end
 
   def escape_js(string)
@@ -107,5 +119,10 @@ class Bcat
   def notice(message)
     return if !@config[:debug]
     warn "#{File.basename($0)}: #{message}"
+  end
+  
+  private
+  def contents_of_public_file(filename)
+    File.read(File.join(File.dirname(__FILE__), 'bcat', 'public', filename))
   end
 end
